@@ -1,7 +1,8 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-
+use App\Lib\AuthRedirection;
+use App\Lib\EnsureBilling;
 use App\Http\Livewire\Auth\ForgotPassword;
 use App\Http\Livewire\Auth\ResetPassword;
 use App\Http\Livewire\Auth\SignUp;
@@ -14,10 +15,24 @@ use App\Http\Livewire\StaticSignIn;
 use App\Http\Livewire\StaticSignUp;
 use App\Http\Livewire\Rtl;
 
+use Illuminate\Support\Facades\Config;
+use Illuminate\Support\Facades\DB;
+use Shopify\Auth\OAuth;
+use Shopify\Auth\Session as AuthSession;
+use Shopify\Clients\HttpHeaders;
+use Shopify\Clients\Rest;
+use Shopify\Context;
+use Shopify\Exception\InvalidWebhookException;
+use Shopify\Utils;
+use Shopify\Webhooks\Registry;
+use Shopify\Webhooks\Topics;
+
 use App\Http\Livewire\LaravelExamples\UserProfile;
 use App\Http\Livewire\LaravelExamples\UserManagement;
 use App\Http\Livewire\Products;
+use App\Models\Session;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 
 /*
 |--------------------------------------------------------------------------
@@ -29,6 +44,72 @@ use Illuminate\Http\Request;
 | contains the "web" middleware group. Now create something great!
 |
 */
+
+Route::fallback(function (Request $request) {
+    if (Context::$IS_EMBEDDED_APP && $request->query("embedded", false) === "1") {
+        if (env('APP_ENV') === 'production') {
+            return file_get_contents(public_path('index.html'));
+        } else {
+            return file_get_contents(base_path('frontend/index.html'));
+        }
+    } else {
+        return redirect(Utils::getEmbeddedAppUrl($request->query("host", null)) . "/" . $request->path());
+    }
+})->middleware('shopify.installed');
+
+Route::get('/api/auth', function (Request $request) {
+
+    $shop = Utils::sanitizeShopDomain($request->query('shop'));
+    // Delete any previously created OAuth sessions that were not completed (don't have an access token)
+    $session = Session::where('shop', $shop)->where('access_token', null)->first();
+    if($session){
+        $session->delete();
+    }
+
+    return AuthRedirection::redirect($request);
+});
+
+Route::get('/api/auth/callback', function (Request $request) {
+
+    try{
+            $session = OAuth::callback(
+                $request->cookie(),
+                $request->query(),
+                ['App\Lib\CookieHandler', 'saveShopifyCookie'],
+            );
+
+            $host = $request->query('host');
+            $shop = Utils::sanitizeShopDomain($request->query('shop'));
+
+            $response = Registry::register('/api/webhooks', Topics::APP_UNINSTALLED, $shop, $session->getAccessToken());
+
+            if ($response->isSuccess()) {
+                Log::debug("Registered APP_UNINSTALLED webhook for shop $shop");
+            } else {
+                Log::error(
+                    "Failed to register APP_UNINSTALLED webhook for shop $shop with response body: " .
+                        print_r($response->getBody(), true)
+                );
+            }
+
+
+            $redirectUrl = Utils::getEmbeddedAppUrl($host);
+            if (Config::get('shopify.billing.required')) {
+                list($hasPayment, $confirmationUrl) = EnsureBilling::check($session, Config::get('shopify.billing'));
+
+                if (!$hasPayment) {
+                    $redirectUrl = $confirmationUrl;
+                }
+            }
+
+            return redirect($redirectUrl);
+
+    } catch (Exception $e) {
+        Log::warning('Failed to authenticate: ' . $e->getMessage());
+
+        return redirect('/api/auth?shop=' . $request->query('shop'));
+    }
+});
 
 Route::get('/', function() {
     return redirect('/login');
