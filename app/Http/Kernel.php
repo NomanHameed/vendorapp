@@ -62,5 +62,7 @@ class Kernel extends HttpKernel
         'signed' => \Illuminate\Routing\Middleware\ValidateSignature::class,
         'throttle' => \Illuminate\Routing\Middleware\ThrottleRequests::class,
         'verified' => \Illuminate\Auth\Middleware\EnsureEmailIsVerified::class,
+        'shopify.auth' => \App\Http\Middleware\EnsureShopifySession::class,
+        'shopify.installed' => \App\Http\Middleware\EnsureShopifyInstalled::class,
     ];
 }
