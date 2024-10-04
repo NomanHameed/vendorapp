@@ -1,4 +1,7 @@
 <IfModule mod_rewrite.c>
+    
+    Header always unset X-Frame-Options
+
     <IfModule mod_negotiation.c>
         Options -MultiViews -Indexes
     </IfModule>

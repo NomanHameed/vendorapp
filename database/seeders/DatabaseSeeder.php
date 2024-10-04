@@ -2,10 +2,9 @@
 
 namespace Database\Seeders;
 
+// use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
-
-use App\Models\User;
 
 class DatabaseSeeder extends Seeder
 {
@@ -16,10 +15,24 @@ class DatabaseSeeder extends Seeder
      */
     public function run()
     {
-        User::factory()->create([
-            'name' => 'admin',
-            'email' => 'admin@softui.com',
-            'password' => Hash::make('secret')
+        // \App\Models\User::factory(10)->create();
+
+        // \App\Models\User::factory()->create([
+        //     'name' => 'Test User',
+        //     'email' => 'umairakram500@gmail.com',
+        //     'password' => Hash::make('Umair@32!')
+        // ]);
+        // \App\Models\User::factory()->create([
+        //     'name' => 'Scott',
+        //     'email' => 'scott@scarletbranding.co.nz',
+        //     'password' => Hash::make('XhR(ZUS@)&')
+        // ]);
+        \App\Models\User::factory()->create([
+            'name' => 'Test User',
+            'email' => 'umair@local.com',
+            'password' => Hash::make('Umair123')
         ]);
+
+        
     }
 }

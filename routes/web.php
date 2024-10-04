@@ -1,38 +1,13 @@
 <?php
 
+use App\Http\Controllers\CollectionController;
+use App\Http\Controllers\CustomerController;
+use App\Http\Controllers\OrderController;
+use App\Http\Controllers\ProductController;
+use App\Http\Controllers\StoreController;
+use App\Http\Controllers\HomeController;
+use App\Http\Controllers\FashionBizController;
 use Illuminate\Support\Facades\Route;
-use App\Lib\AuthRedirection;
-use App\Lib\EnsureBilling;
-use App\Http\Livewire\Auth\ForgotPassword;
-use App\Http\Livewire\Auth\ResetPassword;
-use App\Http\Livewire\Auth\SignUp;
-use App\Http\Livewire\Auth\Login;
-use App\Http\Livewire\Dashboard;
-use App\Http\Livewire\Billing;
-use App\Http\Livewire\Profile;
-use App\Http\Livewire\Tables;
-use App\Http\Livewire\StaticSignIn;
-use App\Http\Livewire\StaticSignUp;
-use App\Http\Livewire\Rtl;
-
-use Illuminate\Support\Facades\Config;
-use Illuminate\Support\Facades\DB;
-use Shopify\Auth\OAuth;
-use Shopify\Auth\Session as AuthSession;
-use Shopify\Clients\HttpHeaders;
-use Shopify\Clients\Rest;
-use Shopify\Context;
-use Shopify\Exception\InvalidWebhookException;
-use Shopify\Utils;
-use Shopify\Webhooks\Registry;
-use Shopify\Webhooks\Topics;
-
-use App\Http\Livewire\LaravelExamples\UserProfile;
-use App\Http\Livewire\LaravelExamples\UserManagement;
-use App\Http\Livewire\Products;
-use App\Models\Session;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Log;
 
 /*
 |--------------------------------------------------------------------------
@@ -45,94 +20,106 @@ use Illuminate\Support\Facades\Log;
 |
 */
 
-Route::fallback(function (Request $request) {
-    if (Context::$IS_EMBEDDED_APP && $request->query("embedded", false) === "1") {
-        if (env('APP_ENV') === 'production') {
-            return file_get_contents(public_path('index.html'));
-        } else {
-            return file_get_contents(base_path('frontend/index.html'));
-        }
-    } else {
-        return redirect(Utils::getEmbeddedAppUrl($request->query("host", null)) . "/" . $request->path());
-    }
-})->middleware('shopify.installed');
+// Route::get('/', function () {
+//     return view('welcome');
+// });
 
-Route::get('/api/auth', function (Request $request) {
+Route::get('/dashboard', function () {
+    return view('dashboard');
+})->name('dashboard');
 
-    $shop = Utils::sanitizeShopDomain($request->query('shop'));
-    dd($shop);
-    // Delete any previously created OAuth sessions that were not completed (don't have an access token)
-    $session = Session::where('shop', $shop)->where('access_token', null)->first();
-    if($session){
-        $session->delete();
-    }
+require __DIR__ . '/auth.php';
 
-    return AuthRedirection::redirect($request);
-});
+/*
+|--------------------------------------------------------------------------
+| Web Routes
+|--------------------------------------------------------------------------
+|
+| Here is where you can register web routes for your application. These
+| routes are loaded by the RouteServiceProvider within a group which
+| contains the "web" middleware group. Now create something great!
+|
+*/
 
-Route::get('/api/auth/callback', function (Request $request) {
+// Route::view('/', 'app')->name('home');
+Route::get('/', [HomeController::class,'index'])->name('home');
+Route::get('/install', [HomeController::class,'install'])->name('install');
+Route::get('/token', [HomeController::class,'token'])->name('token');
 
-    try{
-            $session = OAuth::callback(
-                $request->cookie(),
-                $request->query(),
-                ['App\Lib\CookieHandler', 'saveShopifyCookie'],
-            );
-
-            $host = $request->query('host');
-            $shop = Utils::sanitizeShopDomain($request->query('shop'));
-
-            $response = Registry::register('/api/webhooks', Topics::APP_UNINSTALLED, $shop, $session->getAccessToken());
-
-            if ($response->isSuccess()) {
-                Log::debug("Registered APP_UNINSTALLED webhook for shop $shop");
-            } else {
-                Log::error(
-                    "Failed to register APP_UNINSTALLED webhook for shop $shop with response body: " .
-                        print_r($response->getBody(), true)
-                );
-            }
-
-
-            $redirectUrl = Utils::getEmbeddedAppUrl($host);
-            if (Config::get('shopify.billing.required')) {
-                list($hasPayment, $confirmationUrl) = EnsureBilling::check($session, Config::get('shopify.billing'));
-
-                if (!$hasPayment) {
-                    $redirectUrl = $confirmationUrl;
-                }
-            }
-
-            return redirect($redirectUrl);
-
-    } catch (Exception $e) {
-        Log::warning('Failed to authenticate: ' . $e->getMessage());
-
-        return redirect('/api/auth?shop=' . $request->query('shop'));
-    }
-});
-
-Route::get('/', function() {
-    return redirect('/login');
-});
-
-Route::get('/products', Products::class)->name('products');
-Route::get('/sign-up', SignUp::class)->name('sign-up');
-Route::get('/login', Login::class)->name('login');
-
-Route::get('/login/forgot-password', ForgotPassword::class)->name('forgot-password');
-
-Route::get('/reset-password/{id}',ResetPassword::class)->name('reset-password')->middleware('signed');
+Route::get('store/settings', [StoreController::class, 'settings'])->name('store.settings');
+Route::post('store/settings', [StoreController::class, 'updateSettings'])->name('store.setting-update');
 
 Route::middleware('auth')->group(function () {
-    Route::get('/dashboard', Dashboard::class)->name('dashboard');
-    Route::get('/billing', Billing::class)->name('billing');
-    Route::get('/profile', Profile::class)->name('profile');
-    Route::get('/tables', Tables::class)->name('tables');
-    Route::get('/static-sign-in', StaticSignIn::class)->name('sign-in');
-    Route::get('/static-sign-up', StaticSignUp::class)->name('static-sign-up');
-    Route::get('/rtl', Rtl::class)->name('rtl');
-    Route::get('/laravel-user-profile', UserProfile::class)->name('user-profile');
-    Route::get('/laravel-user-management', UserManagement::class)->name('user-management');
+
+    // Route::get('products/sync', [ProductController::class, 'sync'])->name('products-sync');
+    // // Route::resource('category', CategoryController::class);
+    // Route::resource('products', ProductController::class);
+
+
+    // Route::get('collections/sync', [CollectionController::class, 'sync'])->name('collections-sync');
+    // Route::get('collections', [CollectionController::class, 'index'])->name('collections');
+
+    // Settings
+
+    // Route::get('/', function () {
+    //     return redirect()->route('products.index');
+    // })->name('home');
+
 });
 
+//bang Product route
+// Route::resource('bangproducts',BangProductController::class);
+//import product view page
+// Route::view('categorys/import_products', 'categorys/import_products')->name('import_products');
+// //route update stock cantroller
+// Route::get('update_stock', [ProductController::class, 'update_stock'])->name('update_stock');
+// //route product update cantroller
+// Route::get('product_update', [ProductController::class, 'product_update'])->name('product_update');
+
+
+// // Route::get('/add_payment', 'StoreController@addPayment')->name('payment.add');
+// // Route::get('/payment_callback', 'StoreController@paymentCallback')->name('payment.callback');
+
+// Route::resource('fashionbiz', FashionBizController::class);
+// Route::get('style/product_qty', [FashionBizController::class, 'product_qty'])->name('product_qty');
+
+// Payments
+// Route::get('payment/callback', 'PaymentController@callback')->name('payment.callback');
+// Route::resource('payment', PaymentController::class);
+
+
+// Route::get('customers', [CustomerController::class, 'index'])->name('customers');
+// Route::get('customers/sync', [CustomerController::class, 'sync'])->name('customers-sync');
+Route::get('add_order', [OrderController::class, 'addOrder'])->name('add-orders');
+
+//ch order CANTROLLER create
+// Route::get('createOrder', 'OrderController@createOrder')->name('createOrder');
+Route::get('orders', 'OrderController@index')->name('orders');
+// Route::get('orders/sync', 'OrderController@sync')->name('orders-sync');
+
+
+Route::prefix('webhooks')->group(function () {
+
+
+    // Route::post('customers/create', [CustomerController::class, 'createForWebHook'])->name('webhook-customers-create');
+    // Route::post('customers/update', [CustomerController::class, 'updateForWebHook'])->name('webhook-customers-update');
+    // Route::post('customers/delete', [CustomerController::class, 'deleteForWebHook'])->name('webhook-customers-create');
+
+    Route::post('orders/create', [OrderController::class, 'createForWebHook'])->name('webhook-orders-create-1');
+    Route::post('orders/update', [OrderController::class, 'updateForWebHook'])->name('webhook-orders-update');
+    Route::post('orders/delete', [OrderController::class, 'deleteForWebHook'])->name('webhook-orders-create');
+
+    // Route::post('collections/create', [CollectionController::class, 'createForWebHook'])->name('webhook-collections-create');
+    // Route::post('collections/update', [CollectionController::class, 'updateForWebHook'])->name('webhook-collections-update');
+    // Route::post('collections/delete', [CollectionController::class, 'deleteForWebHook'])->name('webhook-collections-delete');
+
+    // Route::post('products/create', [ProductController::class, 'createForWebHook'])->name('webhook-products-create');
+    // Route::post('products/update', [ProductController::class, 'updateForWebHook'])->name('webhook-products-update');
+    // Route::post('products/delete', [ProductController::class, 'deleteForWebHook'])->name('webhook-products-delete');
+});
+
+
+// GDPR Mandatory webhooks
+Route::post('/shop_redact', [HomeController::class, 'gdprWebhook']);
+Route::post('/customers_redact', [HomeController::class, 'gdprWebhook']);
+Route::post('/customers_data', [HomeController::class, 'gdprWebhook']);
