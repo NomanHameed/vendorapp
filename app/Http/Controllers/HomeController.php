@@ -128,6 +128,9 @@ class HomeController extends Controller
         }
     }
 
+    public function syncProducts(){
+
+    }
     /**
      * @param object $request
      * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|View

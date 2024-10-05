@@ -49,9 +49,11 @@ Route::get('/token', [HomeController::class,'token'])->name('token');
 Route::get('store/settings', [StoreController::class, 'settings'])->name('store.settings');
 Route::post('store/settings', [StoreController::class, 'updateSettings'])->name('store.setting-update');
 
-Route::middleware('auth')->group(function () {
+// Route::middleware('auth')->group(function () {
 
-    // Route::get('products/sync', [ProductController::class, 'sync'])->name('products-sync');
+    Route::get('products/sync', [ProductController::class, 'sync'])->name('products-sync');
+    Route::get('products', [ProductController::class, 'index'])->name('products');
+    Route::delete('product/delete', [ProductController::class, 'destroy'])->name('product.delete');
     // // Route::resource('category', CategoryController::class);
     // Route::resource('products', ProductController::class);
 
@@ -65,14 +67,14 @@ Route::middleware('auth')->group(function () {
     //     return redirect()->route('products.index');
     // })->name('home');
 
-});
+// });
 
 //bang Product route
 // Route::resource('bangproducts',BangProductController::class);
 //import product view page
 // Route::view('categorys/import_products', 'categorys/import_products')->name('import_products');
 // //route update stock cantroller
-// Route::get('update_stock', [ProductController::class, 'update_stock'])->name('update_stock');
+Route::get('update_stock', [ProductController::class, 'update_stock'])->name('update_stock');
 // //route product update cantroller
 // Route::get('product_update', [ProductController::class, 'product_update'])->name('product_update');
 

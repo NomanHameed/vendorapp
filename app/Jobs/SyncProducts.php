@@ -38,17 +38,12 @@ class SyncProducts implements ShouldQueue
      */
     public function handle()
     {
-        
         $data = Storage::disk('public')->get( $this->filename );
         $store = Store::where('domain', $this->domain)->first();
-
         if(empty($data)) return;
-        
         $products = json_decode($data, true);
-        
         foreach($products as $product) {
             Product::manageProduct($product, $store);
         }
-
     }
 }

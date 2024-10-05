@@ -23,11 +23,15 @@
         @yield('content')
     </div>
     <script>
-        var shop = "<?php echo $_GET['shop'] ?? $_POST['shop'] ?>";
+//        var shop = "
+<?php
+// echo $_GET['shop'] ?? $_POST['shop']
+?>
+// ";
 
         // var links = document.getElementsByTagName('a');
         // for(var i = 0; i< links.length; i++){
-        //     var href = links[i].href + (links[i].href.indexOf('?') != -1 ? "&" : "?") + "shop="+shop 
+        //     var href = links[i].href + (links[i].href.indexOf('?') != -1 ? "&" : "?") + "shop="+shop
         //     links[i].setAttribute('href', href);
         // }
     </script>
@@ -41,6 +45,7 @@
     <script src="{{ asset('js/app-script.js') }}"></script>
     <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
     <script>
+        /**
         $(function() {
             $("a:not(.view-product)").attr('href', function(i, h) {
                 return h + (h.indexOf('?') != -1 ? "&" : "?") + "shop="+shop;
@@ -73,6 +78,7 @@
             });
 
         });
+        **/
     </script>
     <script src="{{ asset('js/category.js') }}?v=1.7"></script>
     @yield('pageScript')
