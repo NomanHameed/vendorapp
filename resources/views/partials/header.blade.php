@@ -6,15 +6,15 @@ $routeName = request()->route()->getName();
 
         <div class="collapse navbar-collapse" id="navbarText">
             <ul class="navbar-nav me-auto">
-                
+
                 <li class="nav-item">
-                    <a class="nav-link {{ $routeName=='store.settings'?'active':'' }}" href="{{ route('store.settings',$request ?? '') }}">Settings</a>
+                    <a class="nav-link {{ $routeName=='products'?'active':'' }}" href="{{ route('products',$request ?? '') }}">Products</a>
                 </li>
             </ul>
-            <li class="nav-item">
+            {{-- <li class="nav-item">
                 <a class="nav-link update_stock_btn {{ $routeName=='update_stock'?'active':'' }}"
                     href="{{ route('update_stock',$request ?? '') }}">Orders</a>
-            </li>
+            </li> --}}
 
             <form id="logout-form" action="{{ route('logout') }}" method="POST">
                 {{ csrf_field() }}

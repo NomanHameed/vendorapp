@@ -3,7 +3,7 @@
 @section('content')
     <main id="order-wrapper">
         <h1>Product List</h1>
-        <a class="btn btn-primary " href="{{ route('products')}}">Sync Shopify</a>
+        <a class="btn btn-primary " href="{{ route('products-sync')}}">Sync Shopify</a>
         {{-- <form action="{{ url('product/delete') }}" method="POST">
             @method('DELETE')
             <button type="submit" class="btn btn-danger mt-1">Delete</button>
