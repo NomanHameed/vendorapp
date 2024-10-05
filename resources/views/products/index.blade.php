@@ -15,11 +15,9 @@
                     <th>#</th>
                     <th>Shopify Product ID</th>
                     <th>Product Name</th>
+                    <th>Vendor</th>
                     <th>Product Type</th>
-                    <th>Handle</th>
-                    <th>Published Scope</th>
                     <th>Tags</th>
-                    <th>Price</th>
                     <th>Status</th>
                 </tr>
             </thead>
@@ -27,9 +25,12 @@
                 @foreach($products as $key => $product)
                     <tr>
                         <td>{{ $key + 1 }}</td>
-                        <td>{{ $product->title }}</td>
                         <td>{{ $product->shopify_product_id }}</td>
+                        <td>{{ $product->title }}</td>
                         <td>{{ $product->vendor }}</td>
+                        <td>{{ $product->product_type }}</td>
+                        <td>{{ $product->tags }}</td>
+                        <td>{{ $product->status }}</td>
                     </tr>
                 @endforeach
             </tbody>
