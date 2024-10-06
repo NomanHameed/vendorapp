@@ -8,7 +8,7 @@ $routeName = request()->route()->getName();
             <ul class="navbar-nav me-auto">
 
                 <li class="nav-item">
-                    <a class="nav-link {{ $routeName=='products'?'active':'' }}" href="{{ route('products',$request ?? '') }}">Products</a>
+                    <a class="nav-link {{ $routeName=='products.index'?'active':'' }}" href="{{ route('products.index',$request ?? '') }}">Products</a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link {{ $routeName=='roles.index'?'active':'' }}" href="{{ route('roles.index',$request ?? '') }}">Manage Role</a>

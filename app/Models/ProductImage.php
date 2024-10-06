@@ -12,7 +12,6 @@ class ProductImage extends Model
     protected $fillable = [
         'product_id',
         'shopify_product_image_id',
-        'product_variant_id',
         'shopify_product_id',
         'alt',
         'admin_graphql_api_id',
@@ -24,4 +23,8 @@ class ProductImage extends Model
     protected $casts = [
         'variant_ids' => 'array',
     ];
+
+    public function product(){
+        return $this->belongsTo(Product::class, 'product_id');
+    }
 }

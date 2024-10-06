@@ -15,8 +15,9 @@ class CreateProductOptionsTable extends Migration
     {
         Schema::create('product_options', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('product_id')->nullable();
-            $table->string('shopify_product_id')->nullable();
+            $table->foreignId('product_id');
+            $table->string('shopify_option_id');
+            $table->string('shopify_product_id');
             $table->string('name')->nullable();
             $table->string('position')->nullable();
             $table->jsonb('value')->nullable();

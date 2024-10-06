@@ -11,6 +11,7 @@ class ProductOptions extends Model
 
     protected $fillable = [
         'product_id',
+        'shopify_option_id',
         'shopify_product_id',
         'name',
         'position',
@@ -20,4 +21,8 @@ class ProductOptions extends Model
     protected $casts = [
         'values' => 'array',
     ];
+
+    public function product(){
+        return $this->belongsTo(Product::class, 'product_id');
+    }
 }

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\AppHelper;
+use App\Jobs\SyncProduct;
 use App\Jobs\SyncProducts;
 use App\Models\Product;
 use App\Models\Shopify;
@@ -15,11 +16,11 @@ class ProductController extends Controller
     /**
      * Display a listing of the resource.
      *
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\View\View
      */
     public function index()
     {
-        $products = Product::all();
+        $products = Product::paginate(10);
         return view('products.index', compact('products'));
     }
 
@@ -48,11 +49,12 @@ class ProductController extends Controller
      * Display the specified resource.
      *
      * @param  \App\Models\Product  $product
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\View\View
      */
     public function show(Product $product)
     {
-        //
+        $product->load('variants', 'options');
+        return view('products.show', compact('product'));
     }
 
     /**
@@ -87,6 +89,22 @@ class ProductController extends Controller
         return redirect()->back();
     }
 
+    public function shopifyUpdate(Product $product){
+        $store = Store::latest()->first();
+        $product = Product::find(1);
+        $end_point = "products/". $product->shopify_product_id;
+        $response = Shopify::call($store->token, $store->domain, $end_point, null, 'GET');
+        $header = AppHelper::getShopifyNextPageArray(Shopify::$headers);
+
+        if (isset($response['product']) && count($response['product']) > 0) {
+            $filename = 'product/' . str_replace('.myshopify.com', '', $store->domain) . '--' . $response['product']['id'] . '.json';
+            // Save as files
+            Storage::disk('public')->put($filename, json_encode($response['product']));
+
+            SyncProduct::dispatch($store->domain, $filename);
+        }
+        return redirect()->back()->with('success','Product Sync successfully');
+    }
     /**
      * Show the form for editing the specified resource.
      *
@@ -118,7 +136,6 @@ class ProductController extends Controller
      */
     public function destroy(Product $product)
     {
-        dd('asdfas');
         if(Product::query()->delete()){
             return redirect()->back();
         }

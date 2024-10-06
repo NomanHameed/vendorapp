@@ -17,9 +17,8 @@ class CreateProductPicturesTable extends Migration
             $table->id();
             $table->foreignId('product_id')->nullable();
             $table->string('shopify_product_image_id')->nullable();
-            $table->string('product_variant_id')->nullable();
             $table->string('shopify_product_id')->nullable();
-            $table->string('alt')->nullable();
+            $table->text('alt')->nullable();
             $table->string('admin_graphql_api_id')->nullable();
             $table->string('width')->nullable();
             $table->string('height')->nullable();

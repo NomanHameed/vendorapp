@@ -12,7 +12,6 @@ class ProductPicture extends Model
     protected $fillable = [
         'product_id',
         'shopify_product_image_id',
-        'product_variant_id',
         'shopify_product_id',
         'alt',
         'admin_graphql_api_id',
