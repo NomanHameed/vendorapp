@@ -27,12 +27,12 @@ class DatabaseSeeder extends Seeder
         //     'email' => 'scott@scarletbranding.co.nz',
         //     'password' => Hash::make('XhR(ZUS@)&')
         // ]);
-        \App\Models\User::factory()->create([
-            'name' => 'Test User',
-            'email' => 'umair@local.com',
-            'password' => Hash::make('Umair123')
-        ]);
+        // \App\Models\User::factory()->create([
+        //     'name' => 'Test User',
+        //     'email' => 'umair@local.com',
+        //     'password' => Hash::make('Umair123')
+        // ]);
 
-        
+
     }
 }

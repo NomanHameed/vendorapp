@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\RoleController;
 use App\Http\Controllers\CollectionController;
 use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\OrderController;
@@ -7,6 +8,7 @@ use App\Http\Controllers\ProductController;
 use App\Http\Controllers\StoreController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\FashionBizController;
+use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -56,7 +58,18 @@ Route::post('store/settings', [StoreController::class, 'updateSettings'])->name(
     Route::delete('product/delete', [ProductController::class, 'destroy'])->name('product.delete');
     // // Route::resource('category', CategoryController::class);
     // Route::resource('products', ProductController::class);
-
+    Route::resource('roles', RoleController::class)->names([
+        'index' => 'roles.index',
+        'edit' => 'roles.edit',
+        'show' => 'roles.show',
+        'delete' => 'roles.delete',
+    ]);
+    Route::resource('users', UserController::class)->names([
+        'index' => 'users.index',
+        'edit' => 'users.edit',
+        'show' => 'users.show',
+        'delete' => 'users.delete',
+    ]);
 
     // Route::get('collections/sync', [CollectionController::class, 'sync'])->name('collections-sync');
     // Route::get('collections', [CollectionController::class, 'index'])->name('collections');

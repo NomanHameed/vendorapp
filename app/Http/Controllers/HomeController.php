@@ -76,7 +76,6 @@ class HomeController extends Controller
 
         $install_url = "https://" . $storeName . "/admin/oauth/authorize?client_id=" . env('PUBLIC_APP_API_KEY') . "&scope=" . trim(env('PUBLIC_APP_SCOPES')) . "&redirect_uri=" . urlencode(env('PUBLIC_APP_URL').'token');
         header("Location: " . $install_url);
-        dd($install_url);
         die();
     }
 

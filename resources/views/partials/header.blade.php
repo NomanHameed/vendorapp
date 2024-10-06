@@ -10,6 +10,12 @@ $routeName = request()->route()->getName();
                 <li class="nav-item">
                     <a class="nav-link {{ $routeName=='products'?'active':'' }}" href="{{ route('products',$request ?? '') }}">Products</a>
                 </li>
+                <li class="nav-item">
+                    <a class="nav-link {{ $routeName=='roles.index'?'active':'' }}" href="{{ route('roles.index',$request ?? '') }}">Manage Role</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link {{ $routeName=='users.index'?'active':'' }}" href="{{ route('users.index',$request ?? '') }}">Users</a>
+                </li>
             </ul>
             {{-- <li class="nav-item">
                 <a class="nav-link update_stock_btn {{ $routeName=='update_stock'?'active':'' }}"
