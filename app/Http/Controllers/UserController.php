@@ -6,10 +6,9 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Models\User;
 use Spatie\Permission\Models\Role;
-use Hash;
 use Illuminate\Support\Arr;
-
-
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
 
 class UserController extends Controller
 
@@ -118,9 +117,7 @@ class UserController extends Controller
     public function show($id)
 
     {
-
-        $user = User::find($id);
-
+        $user = User::with('products')->find($id);
         return view('users.show', compact('user'));
     }
 

@@ -56,6 +56,17 @@
             </div>
 
         </div>
+        <div class="col-xs-12 col-sm-12 col-md-12">
+
+            <div class="form-group">
+
+                <strong>Vendor Name:</strong>
+
+                {!! Form::text('vendor_name', null, ['placeholder' => 'Vendor Name', 'class' => 'form-control']) !!}
+
+            </div>
+
+        </div>
 
         <div class="col-xs-12 col-sm-12 col-md-12">
 

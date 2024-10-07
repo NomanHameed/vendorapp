@@ -53,14 +53,16 @@ Route::post('store/settings', [StoreController::class, 'updateSettings'])->name(
 
 // Route::middleware('auth')->group(function () {
 
+Route::get('products/sync', [ProductController::class, 'sync'])->name('products-sync');
+Route::get('product/sync', [ProductController::class, 'shopifyUpdate'])->name('product-sync');
+
+
 Route::resource('products', ProductController::class)->names([
     'index' => 'products.index',
     'edit' => 'products.edit',
     'show' => 'products.show',
     'delete' => 'products.delete',
 ]);
-    Route::get('products/sync', [ProductController::class, 'sync'])->name('products-sync');
-    Route::get('product/sync', [ProductController::class, 'shopifyUpdate'])->name('product-sync');
     // Route::get('products', [ProductController::class, 'index'])->name('products');
     // Route::delete('product/delete', [ProductController::class, 'destroy'])->name('product.delete');
     // // Route::resource('category', CategoryController::class);
